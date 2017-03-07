@@ -1,25 +1,38 @@
-// Libraries
+// Example project for a weather station with attached display
+// Michael Morscher, March 2017
+// Tested on Arduino IDE 1.8.1
+// Board: NodeMCU ESP8266 v3
 #include <Wire.h>
+
+// Additional used libraries
+// Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor
+// Adafruit BMP280 Library: https://github.com/adafruit/Adafruit_BMP280_Library
+// ESP8266-Arduino-SHT21: https://github.com/vincasmiliunas/ESP8266-Arduino-SHT21
+// ESP8266-OLED-SSD1306: https://github.com/squix78/esp8266-oled-ssd1306
 #include "SSD1306.h"
 #include "SSD1306Spi.h"
 #include <SHT21.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
 
-
-// Configure Display
-// D1 = RES/RST/RESET
-// D2 = DC
+// Configure Display, Type: SSD1306 SPI
+// D3 = RES/RST/RESET
+// D4 = DC
 // D8 = CS
-SSD1306Spi  display(D3, D4, D8);
+SSD1306Spi display(D3, D4, D8);
 
-// Configure Light Sensor
+// Configure Light Sensor, Type: GL55
+// A0 = DATA
 int analogPin = 0;
 
-// Configure Temperature/Humidity Sensor
+// Configure Temperature/Humidity Sensor, Type: SHT21 / SI7021
+// D2 = SDA 
+// D1 = SCL
 Sht21 sht21;
 
-// Configure Pressure
+// Configure Pressure Sensor, Type: Bosch BMP-280
+// D2 = SDA 
+// D1 = SCL
 Adafruit_BMP280 bmp;
 #define BMP_SCK 13
 #define BMP_MISO 12
@@ -34,7 +47,10 @@ char temperature2[5];
 char humidity[5];
 char pressure[5];
 
+// Setup Phase
 void setup() {
+  
+  // Initialize Serial debug output
   Serial.begin(115200);
   Serial.print("\n\n");
   Serial.print("Setup: Starting...\n");
@@ -53,32 +69,39 @@ void setup() {
   Serial.print("Setup: Successfull!\n");
 }
 
+// Print data on the display
 void outputToDisplay() {
-    display.clear();
+  
+  // Erase old content
+  display.clear();
     
-    // Set layout
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.setFont(ArialMT_Plain_10);
+  // Set layout of text, left aligned, Arial 10px
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
 
-    // Write output to buffer
-    display.drawString(0, 0, "Uptime: " + String(counter) + "s");
-    display.drawString(0, 11, "Brightness: " + String(brightness));
-    display.drawString(0, 21, "Temperature: " + String(temperature) + " °C");
-    display.drawString(0, 31, "Temperature2: " + String(temperature2) + " °C");
-    display.drawString(0, 41, "Humidity: " + String(humidity) + " %");
-    display.drawString(0, 51, "Pressure: " + String(pressure) + " hPa");
+  // Write output to buffer
+  display.drawString(0, 0, "Uptime: " + String(counter) + "s");
+  display.drawString(0, 11, "Brightness: " + String(brightness));
+  display.drawString(0, 21, "Temperature: " + String(temperature) + " °C");
+  display.drawString(0, 31, "Temperature2: " + String(temperature2) + " °C");
+  display.drawString(0, 41, "Humidity: " + String(humidity) + " %");
+  display.drawString(0, 51, "Pressure: " + String(pressure) + " hPa");
     
-    // Print buffer on display
-    display.display();
+  // Print buffer on display
+  display.display();
 }
 
+// Measure light intensity
 void measureLight() {
   brightness = analogRead(analogPin);
   Serial.print("Measuring brightness: " + String(brightness) + "\n");
 }
 
+// Measure temperature and humidity
 void measureTempHum() {
   float temp, hum;
+
+  // if sensor is functioning correctly
   if (sht21.measure(temp, hum)) {
     // Convert double to string
     dtostrf(temp, 4, 1, temperature);
@@ -93,8 +116,10 @@ void measureTempHum() {
   }
 }
 
+// Measure current air pressure
 void measurePressure() {
-  dtostrf(bmp.readPressure()/100, 4, 1, pressure);
+  // Convert double to string
+  dtostrf(bmp.readPressure()/100, 4, 1, pressure); // in hPa
   dtostrf(bmp.readTemperature(), 4, 1, temperature2);
   Serial.printf("Measuring pressure: ");
   Serial.print(bmp.readPressure()/100);
@@ -104,7 +129,9 @@ void measurePressure() {
   Serial.println(" C");
 }
 
+// Endless program loop
 void loop() {
+  
   // Measure sensor values
   measureLight();
   measureTempHum();
