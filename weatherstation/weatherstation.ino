@@ -1,14 +1,15 @@
-// Example project for a weather station with attached display
-// Michael Morscher, March 2017
-// Tested on Arduino IDE 1.8.1
+// Project for a weather station with an attached display for the NodeMCU/ESP8266 platform
+// Used devices: BMP280, SHT21+SI7021, GL55, SSD1306
+// Michael Morscher, April 2018
+// Tested on Arduino IDE 1.8.5
 // Board: NodeMCU ESP8266 v3
 #include <Wire.h>
 
 // Additional used libraries
-// Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor
-// Adafruit BMP280 Library: https://github.com/adafruit/Adafruit_BMP280_Library
-// ESP8266-Arduino-SHT21: https://github.com/vincasmiliunas/ESP8266-Arduino-SHT21
-// ESP8266-OLED-SSD1306: https://github.com/squix78/esp8266-oled-ssd1306
+// Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor - tested with v1.0.2
+// Adafruit BMP280 Library: https://github.com/adafruit/Adafruit_BMP280_Library - tested with v1.0.2
+// ESP8266-Arduino-SHT21: https://github.com/vincasmiliunas/ESP8266-Arduino-SHT21 - tested with v1.0.0
+// ESP8266-OLED-SSD1306: https://github.com/squix78/esp8266-oled-ssd1306 - tested with v4.0.0
 #include "SSD1306.h"
 #include "SSD1306Spi.h"
 #include <SHT21.h>
