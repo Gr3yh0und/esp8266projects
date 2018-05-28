@@ -23,10 +23,10 @@
 SSD1306Spi display(D3, D4, D8);
 
 // Configure relay pins that are used
-const byte relayPin1 = D0;
-const byte relayPin2 = D1;
-const byte relayPin3 = D2;
-const byte relayPin4 = D6;  // D6 doesn't work on my NodeMCU - this is just a placeholder
+#define RELAY_PIN_1 D0
+#define RELAY_PIN_2 D1
+#define RELAY_PIN_3 D2
+#define RELAY_PIN_4 D6                // D6 doesn't work on my NodeMCU - this is just a placeholder
 
 // Global variables
 const unsigned long period = 1000;    // Optional: Delay timer for every measurement
@@ -37,25 +37,28 @@ bool relayState = false;              // Current relay state (true/false = on/of
 void setup()
 {
   
-  // Initialize Serial debug output
+  // Initialise Serial debug output
   Serial.begin(115200);
   Serial.print("\n\n");
   Serial.print("Setup: Starting...\n");
 
-  // Initialize relay pins as output pins
-  pinMode(relayPin1, OUTPUT);
-  pinMode(relayPin2, OUTPUT);
-  pinMode(relayPin3, OUTPUT);
-  pinMode(relayPin4, OUTPUT);
+  // Initialise relay pins as output pins
+  Serial.print("Setup: Initialising relay pins...\n");
+  pinMode(RELAY_PIN_1, OUTPUT);
+  pinMode(RELAY_PIN_2, OUTPUT);
+  pinMode(RELAY_PIN_3, OUTPUT);
+  pinMode(RELAY_PIN_4, OUTPUT);
 
-  // Initializing pins to high which means OFF on the relay card
-  digitalWrite(relayPin1, HIGH);
-  digitalWrite(relayPin2, HIGH);
-  digitalWrite(relayPin3, HIGH);
-  digitalWrite(relayPin4, HIGH);
+  // Initialising pins to high which means OFF on the relay card
+  // Note: With the Sainsmart relay card OFF=HIGH and ON=LOW
+  Serial.print("Setup: Setting all relays to OFF...\n");
+  digitalWrite(RELAY_PIN_1, HIGH);
+  digitalWrite(RELAY_PIN_2, HIGH);
+  digitalWrite(RELAY_PIN_3, HIGH);
+  digitalWrite(RELAY_PIN_4, HIGH);
 
-  // Initializing the UI will init the display too.
-  Serial.print("Setup: Initializing display\n");  
+  // Initialising the UI will init the display too.
+  Serial.print("Setup: Initialising display\n");  
   display.init();
   display.flipScreenVertically();
   
@@ -84,18 +87,18 @@ void outputToDisplay() {
 void toggleRelayState()
 {
   if(relayState == false){
-    Serial.print("Switching relays to FALSE/OFF\n");
-    digitalWrite(relayPin1, HIGH);
-    digitalWrite(relayPin2, HIGH);
-    digitalWrite(relayPin3, HIGH);
-    digitalWrite(relayPin4, HIGH);
+    Serial.print(String(counter) + ": Switching relays to FALSE/OFF\n");
+    digitalWrite(RELAY_PIN_1, HIGH);
+    digitalWrite(RELAY_PIN_2, HIGH);
+    digitalWrite(RELAY_PIN_3, HIGH);
+    digitalWrite(RELAY_PIN_4, HIGH);
     relayState = true;
   }else{
-    Serial.print("Switching relays to TRUE/ON\n");
-    digitalWrite(relayPin1, LOW);
-    digitalWrite(relayPin2, LOW);
-    digitalWrite(relayPin3, LOW);
-    digitalWrite(relayPin4, LOW);
+    Serial.print(String(counter) + ": Switching relays to TRUE/ON\n");
+    digitalWrite(RELAY_PIN_1, LOW);
+    digitalWrite(RELAY_PIN_2, LOW);
+    digitalWrite(RELAY_PIN_3, LOW);
+    digitalWrite(RELAY_PIN_4, LOW);
     relayState = false;
   }
 }
