@@ -1,6 +1,7 @@
 # Dust or smog sensor example
 This example should provide a first start to work with the Nova SDS011 dust sensor. 
 It basically reads the sensor values every few seconds and outputs the data onto a display. To keep the code rather sleek no Wi-Fi functions are included.
+The sensor itself has quite short lifetime expectance (~8000h = ~1 year) so it should be considered to make use of the sleep and wakeup functions that deactivate the sensor while it isn't measuring.
 ## Components
 * NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
 * NodeMCU base board (optional)
