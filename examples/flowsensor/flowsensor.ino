@@ -22,13 +22,14 @@
 SSD1306Spi display(D3, D4, D8);
 
 // Configure FS300A water flow sensor
-const byte dataPin = 2;               // Pin: D2
+#define FS300A_PIN D2
 
 // Global variables
 const unsigned long period = 1000;    // Optional: Delay timer for every measurement
 int counter = 0;                      // Uptime
 volatile int volumeCounter = 0;       // Measures flow sensor pulses
 unsigned int volume = 0;              // Calculated litres/hour
+unsigned int volumeTotal = 0;         // Total amount of liquid that ran through the sensor
 
 // Function which is called when an interrupt arrives
 void ICACHE_RAM_ATTR flow ()
@@ -40,20 +41,21 @@ void ICACHE_RAM_ATTR flow ()
 void setup()
 {
   
-  // Initialize Serial debug output
+  // Initialise Serial debug output
   Serial.begin(115200);
   Serial.print("\n\n");
   Serial.print("Setup: Starting...\n");
 
-  // Initialize Sensor
+  // Initialise Sensor
   // The pin is configured as PULLUP and interrupts are thrown if the edge is RISING
-  pinMode(dataPin, INPUT);
-  digitalWrite(dataPin, HIGH);
+  Serial.print("Setup: Initialising FS300A sensor..\n");
+  pinMode(FS300A_PIN, INPUT);
+  digitalWrite(FS300A_PIN, HIGH);
   attachInterrupt(D2, flow, RISING);
   sei();
 
   // Initialising the UI will init the display too.
-  Serial.print("Setup: Initializing display\n");  
+  Serial.print("Setup: Initialising display\n");  
   display.init();
   display.flipScreenVertically();
   
@@ -73,6 +75,7 @@ void outputToDisplay() {
   // Write output to buffer
   display.drawString(0, 0, "Uptime: " + String(counter) + "s");
   display.drawString(0, 11, "Current volume: " + String(volume)+ " l/h");
+  display.drawString(0, 21, "Total volume: " + String(volumeTotal)+ " l");
     
   // Print buffer on display
   display.display();
@@ -84,10 +87,11 @@ void loop ()
   // Q is the flow rate in l/min
   // (pulse frequency x 60 min) / 7.5Q = flow rate in l/hour
   volume = (volumeCounter * 60 / 7.5);
+  volumeTotal = volumeTotal + (volume / 3600);
   volumeCounter = 0; 
 
-  Serial.print(volume, DEC); 
-  Serial.println(" liters/hour");
+  Serial.println("Current volume: " + String(volume) + " liters/hour");
+  Serial.println("Total volume:  " + String(volumeTotal) + " liters");
   
   outputToDisplay();
   counter++;  
