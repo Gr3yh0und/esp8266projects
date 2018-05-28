@@ -23,7 +23,7 @@
 // D8 = CS
 SSD1306Spi display(D3, D4, D8);
 
-// Configure SDS011 sensor including pins
+// Configure SDS011 sensor including pins D1 and D2
 #define SDS_RX D1
 #define SDS_TX D2
 #define SDS_WARMUP_TIME 5000
@@ -32,11 +32,7 @@ SDS011 sds;
 float p10, p25;
 
 // Global variables
-const unsigned long period = 1000;    // Optional: Delay timer for every measurement
 int counter = 0;                      // Uptime
-volatile int volumeCounter = 0;       // Measures flow sensor pulses
-unsigned int volume = 0;              // Calculated litres/hour
-bool state = false;
 
 // Setup Phase
 void setup()
