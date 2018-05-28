@@ -7,9 +7,9 @@ It basically reads the sensor values every few seconds and outputs the data onto
 * Nova SDS011 dust sensor ([Datasheet](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjKk_vY2qjbAhUEjiwKHYP5D1gQFggoMAA&url=https%3A%2F%2Fnettigo.pl%2Fattachments%2F398&usg=AOvVaw0L3tTLbi_FllDkISzkqxPb))
 * SSD1306 SPI display ([Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf))
 ## Breadboard view
-![breadboard][https://github.com/Gr3yh0und/esp8266projects/tree/master/examples/dustsensor/dust_sensor_bb.png]
+![breadboard][dust_sensor_bb.png]
 ## Schematics
-![schematics][https://github.com/Gr3yh0und/esp8266projects/tree/master/examples/dustsensor/dust_sensor_schem.png]
+![schematics][dust_sensor_schem.png]
 ## Logging output example
 > Setup: Starting...
 Setup: Initializing display
