@@ -12,3 +12,4 @@ The main intent is to get all devices working first and combine them for more co
 
 ## Network related
 * [Over the air update](ota)
+* [Syslog server](syslog)

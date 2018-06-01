@@ -34,3 +34,6 @@
 [submodule "libraries/SD"]
 	path = libraries/SD
 	url = https://github.com/arduino-libraries/SD.git
+[submodule "libraries/Syslog"]
+	path = libraries/Syslog
+	url = https://github.com/arcao/Syslog.git
