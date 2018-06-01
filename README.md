@@ -1,4 +1,4 @@
-ESP8266 aka NodeMCU project collection for smart home use cases
+Collection for smart home automation use cases with ESP8266
 =====
 
 The basic idea behind this collection is to enable people to quickly be able to build small smart home / IoT devices based on the NodeMCU that can be put in and around their homes.
@@ -33,6 +33,24 @@ Certain key parts are defined at the beginning:
 * The complete system is planned to be used locally in a LAN environment. However VPN access for certain services would be nice.
 * The idea is to use the hottest and hippest new piece of technology around
 * Learn
+
+## Hardware
+* NodeMCU v3 (ESP8266)
+* I2C and SPI sensors and actors
+* Wi-Fi connection
+* Raspberry Pi as backend
+
+## Software and Protocols
+* Arduino IDE 1.8.5
+* Arduino libraries as stated in the source code
+* HTTP
+* MQTT
+* InfluxDB
+* Grafana
+* Raspbian
+
+## Installation
+To be done
  
 ## License
 GNU GPL v3
