@@ -1,0 +1,36 @@
+[submodule "libraries/Adafruit_BME280_Library"]
+	path = libraries/Adafruit_BME280_Library
+	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+[submodule "libraries/Adafruit_CircuitPlayground"]
+	path = libraries/Adafruit_CircuitPlayground
+	url = https://github.com/adafruit/Adafruit_CircuitPlayground.git
+[submodule "libraries/Adafruit_Sensor"]
+	path = libraries/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "libraries/SDS011"]
+	path = libraries/SDS011
+	url = https://github.com/ricki-z/SDS011.git
+[submodule "libraries/FlowMeter"]
+	path = libraries/FlowMeter
+	url = https://github.com/sekdiy/FlowMeter.git
+[submodule "libraries/esp8266-oled-ssd1306"]
+	path = libraries/esp8266-oled-ssd1306
+	url = https://github.com/ThingPulse/esp8266-oled-ssd1306.git
+[submodule "libraries/Adafruit_BMP280_Library"]
+	path = libraries/Adafruit_BMP280_Library
+	url = https://github.com/adafruit/Adafruit_BMP280_Library
+[submodule "libraries/ESP8266-Arduino-SHT21"]
+	path = libraries/ESP8266-Arduino-SHT21
+	url = https://github.com/vincasmiliunas/ESP8266-Arduino-SHT21
+[submodule "libraries/Bridge"]
+	path = libraries/Bridge
+	url = https://github.com/arduino-libraries/Bridge.git
+[submodule "libraries/Firmata"]
+	path = libraries/Firmata
+	url = https://github.com/arduino-libraries/Firmata.git
+[submodule "libraries/Keyboard"]
+	path = libraries/Keyboard
+	url = https://github.com/arduino-libraries/Keyboard.git
+[submodule "libraries/SD"]
+	path = libraries/SD
+	url = https://github.com/arduino-libraries/SD.git
