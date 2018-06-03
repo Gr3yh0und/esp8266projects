@@ -1,7 +1,6 @@
 // Project for sending MQTT messages to a broker
-// Based on example: https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino
 // Used devices: none
-// Based on the ArduinoOTA example project
+// Based on example: https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino
 // Michael Morscher, June 2018
 // Tested on Arduino IDE 1.8.5
 // Board: NodeMCU ESP8266 v3
