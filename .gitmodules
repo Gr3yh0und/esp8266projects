@@ -37,3 +37,6 @@
 [submodule "libraries/Syslog"]
 	path = libraries/Syslog
 	url = https://github.com/arcao/Syslog.git
+[submodule "libraries/arduino-mqtt"]
+	path = libraries/arduino-mqtt
+	url = https://github.com/256dpi/arduino-mqtt.git
