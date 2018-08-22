@@ -46,3 +46,6 @@
 [submodule "libraries/Adafruit_NeoPixel"]
 	path = libraries/Adafruit_NeoPixel
 	url = https://github.com/adafruit/Adafruit_NeoPixel.git
+[submodule "libraries/Ethernet"]
+	path = libraries/Ethernet
+	url = https://github.com/arduino-libraries/Ethernet
