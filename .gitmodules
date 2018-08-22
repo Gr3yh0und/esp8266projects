@@ -43,3 +43,6 @@
 [submodule "libraries/Timer"]
 	path = libraries/Timer
 	url = https://github.com/JChristensen/Timer.git
+[submodule "libraries/Adafruit_NeoPixel"]
+	path = libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel.git
