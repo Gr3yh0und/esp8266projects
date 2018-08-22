@@ -16,22 +16,17 @@ const char* version = "1.0";
 const char* ssid = "SSID";
 const char* password = "password";
 const char* hostname = "ESP-test";
-const char* adminpw = "test123";
 
 // Syslog server connection info
 #define SYSLOG_SERVER "lan-syslog-server"
 #define SYSLOG_PORT 514
-
-// This device info
-#define DEVICE_HOSTNAME "esp-test"
-#define APP_NAME "ESP-APP"
+#define SYSLOG_APP_NAME "ESP-APP"
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP udpClient;
 
 // Create a new syslog instance with LOG_KERN facility
-Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, DEVICE_HOSTNAME, APP_NAME, LOG_KERN);
-int iteration = 1;
+Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, hostname, SYSLOG_APP_NAME, LOG_KERN);
 
 void setup() {
   // Serial configuration
