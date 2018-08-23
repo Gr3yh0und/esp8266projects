@@ -19,7 +19,7 @@
 #include <MQTT.h>
 #include "Timer.h" 
 
-#define VERSION 1.0
+#define VERSION 1.1
 #define SECOND 1000
 
 // Network settings
@@ -44,8 +44,17 @@ char *topics_actors[] = { "sprinkler",  "tropfschlauch", "lichterkette"};
 #define TOPIC_SENSORS_NUMBER 3
 char *topics_sensors[] = { "durchfluss", "feinstaub25", "feinstaub10"};
 
-// Instantiation
+// Timers
 Timer timer; 
+struct struct_timer {
+  int8_t id_every;
+  int8_t id_after;
+  int8_t pin;
+  int8_t counter;
+};
+struct struct_timer topics_timers[3];
+
+// Instantiation
 WiFiClient wifiClient;
 MQTTClient mqttClient;
 WiFiUDP udpClient;
@@ -89,28 +98,47 @@ void deactivateRelay(int &pin, bool &state)
   state = false;
 }
 
-void cancelTimer()
+void updateTimer(void *context)
 {
-  syslog.log(LOG_DEBUG, "Relay: Deactivating #" + String(outputPinForTimer+1));
-  deactivateRelay(relayPin[outputPinForTimer], relayState[outputPinForTimer]);
-  mqttClient.publish(topics_actors[outputPinForTimer], "0");
+  struct struct_timer *timers = (struct_timer *)context;
+  timers->counter = int(timers->counter - 1);
+  mqttClient.publish(topics_actors[timers->pin], String(timers->counter));
 }
 
 void messageReceived(String &topic, String &payload) {
-  Serial.println("MQTT message received: " + topic + " (" + payload + ")");
-  syslog.log(LOG_DEBUG, "MQTT message received: " + topic + " (" + payload + ")");
+  Serial.println("MQTT message received: topic=" + topic + " (payload=" + payload + ")");
+  syslog.log(LOG_DEBUG, "MQTT message received: topic=" + topic + " (payload=" + payload + ")");
 
   // Toggle relays depending on their topic names
   for (int i=0; i < TOPIC_ACTORS_NUMBER; i++){
+    
+    // if topic is found 
     if(topic == topics_actors[i]){
+
+      // check if a timer should get activated
       if(payload.toInt() > 0){
-        syslog.log(LOG_DEBUG, "Relay: Activating #" + String(i+1) + " for " + String(payload) + "seconds");
-        activateRelay(relayPin[i], relayState[i]);
-        outputPinForTimer = i;
-        int timerEvent = timer.after(payload.toInt()*SECOND, cancelTimer);
-      }else{
-        syslog.log(LOG_DEBUG, "Relay: Deactivating #" + String(i+1));
+
+        // check if a timer is already running ...
+        // if a new (higher) counter should be set
+        if(payload.toInt() > topics_timers[i].counter){
+          timer.stop(topics_timers[i].id_after);
+          timer.stop(topics_timers[i].id_every);
+          topics_timers[i].pin = i;
+          topics_timers[i].counter = payload.toInt();
+          topics_timers[i].id_every = timer.every(SECOND, updateTimer, payload.toInt(), (void*)&topics_timers[i]);
+          syslog.log(LOG_INFO, "Relay: Activating #" + String(i+1) + " for " + String(payload) + " seconds");
+          activateRelay(relayPin[i], relayState[i]);
+        }else{
+          // ignore
+          syslog.log(LOG_INFO, "Relay: Ignoring message for relay #" + String(i+1));
+        }
+      }
+
+      // deactivate timer
+      else{
+        syslog.log(LOG_INFO, "Relay: Deactivating #" + String(i+1));
         deactivateRelay(relayPin[i], relayState[i]);
+        timer.stop(topics_timers[i].id_every);
       }
     }
   }
@@ -123,7 +151,7 @@ void messageReceived(String &topic, String &payload) {
   syslog.log(LOG_DEBUG, "New relay states are:" + states);
 }
 
-void measureFlow()
+void measureFlow(void *context)
 {
   // pulse frequency (Hz) = 7.5Q
   // Q is the flow rate in l/min
@@ -243,7 +271,7 @@ void setup() {
   }
 
   // Timers
-  int flowMeasurement = timer.every(SECOND, measureFlow);
+  int flowMeasurement = timer.every(SECOND, measureFlow, (void*)0);
 
   syslog.log(LOG_INFO, "System version: " + String(VERSION));
   syslog.log(LOG_INFO, "System setup successfull!");
