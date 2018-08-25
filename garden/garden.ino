@@ -13,13 +13,13 @@
 // ArduinoOTA: https://github.com/esp8266/Arduino/tree/master/libraries/ArduinoOTA
 // Syslog: https://github.com/arcao/Syslog
 // arduino-mqtt: https://github.com/256dpi/arduino-mqtt
-// Timer: https://github.com/JChristensen/Timer
+// Timer: https://github.com/JChristensen/Timer - Branch v2.1
 #include <ArduinoOTA.h>
 #include <Syslog.h>
 #include <MQTT.h>
 #include "Timer.h" 
 
-#define VERSION 1.1
+#define VERSION 1.2
 #define SECOND 1000
 
 // Network settings
@@ -47,12 +47,11 @@ char *topics_sensors[] = { "durchfluss", "feinstaub25", "feinstaub10"};
 // Timers
 Timer timer; 
 struct struct_timer {
-  int8_t id_every;
-  int8_t id_after;
+  int8_t id;
   int8_t pin;
-  int8_t counter;
+  uint16_t counter;
 };
-struct struct_timer topics_timers[3];
+struct struct_timer topics_timers[TOPIC_ACTORS_NUMBER];
 
 // Instantiation
 WiFiClient wifiClient;
@@ -114,18 +113,24 @@ void messageReceived(String &topic, String &payload) {
     
     // if topic is found 
     if(topic == topics_actors[i]){
+      syslog.log(LOG_DEBUG, "DEBUG=" + String(payload.toInt()));
 
       // check if a timer should get activated
       if(payload.toInt() > 0){
-
+        
         // check if a timer is already running ...
         // if a new (higher) counter should be set
         if(payload.toInt() > topics_timers[i].counter){
-          timer.stop(topics_timers[i].id_after);
-          timer.stop(topics_timers[i].id_every);
+
+          // stop existing timer
+          if(topics_timers[i].counter > 0){
+            timer.stop(topics_timers[i].id);  
+          }
+          
           topics_timers[i].pin = i;
           topics_timers[i].counter = payload.toInt();
-          topics_timers[i].id_every = timer.every(SECOND, updateTimer, payload.toInt(), (void*)&topics_timers[i]);
+          topics_timers[i].id = timer.every(SECOND, updateTimer, payload.toInt(), &topics_timers[i]);
+          syslog.log(LOG_DEBUG, "DEBUG-timers: " + String(topics_timers[i].id));
           syslog.log(LOG_INFO, "Relay: Activating #" + String(i+1) + " for " + String(payload) + " seconds");
           activateRelay(relayPin[i], relayState[i]);
         }else{
@@ -138,7 +143,8 @@ void messageReceived(String &topic, String &payload) {
       else{
         syslog.log(LOG_INFO, "Relay: Deactivating #" + String(i+1));
         deactivateRelay(relayPin[i], relayState[i]);
-        timer.stop(topics_timers[i].id_every);
+        timer.stop(topics_timers[i].id);
+        topics_timers[i].counter = 0;
       }
     }
   }
