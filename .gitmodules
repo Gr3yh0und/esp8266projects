@@ -49,6 +49,9 @@
 [submodule "libraries/Ethernet"]
 	path = libraries/Ethernet
 	url = https://github.com/arduino-libraries/Ethernet
+[submodule "libraries/DFRobotDFPlayerMini"]
+	path = libraries/DFRobotDFPlayerMini
+	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
 [submodule "libraries/CapacitiveSensor"]
 	path = libraries/CapacitiveSensor
 	url = https://github.com/PaulStoffregen/CapacitiveSensor.git
