@@ -9,6 +9,7 @@ The main intent is to get all devices working first and combine them for more co
 ## Actors
 * [4 channel relay module](relay)
 * SSD 1306 OLED display 128x64px
+* [DFplayer mini](dfplayer)
 
 ## Network related
 * [Over the air update](ota)
