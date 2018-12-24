@@ -10,6 +10,7 @@ The main intent is to get all devices working first and combine them for more co
 * [4 channel relay module](relay)
 * SSD 1306 OLED display 128x64px
 * [DFplayer mini](dfplayer)
+* [WS2812 12-LED ring](ledring)
 
 ## Network related
 * [Over the air update](ota)

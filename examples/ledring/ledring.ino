@@ -1,4 +1,4 @@
-// Project for lighting a LED ring
+// Project for lighting a WS2812 based LED ring
 // Used devices: 12-LED WS2812B LED-Ring
 // Michael Morscher, December 2018
 // Tested on Arduino IDE 1.8.8
@@ -15,22 +15,36 @@
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS_NUMBER, LEDS_PIN, NEO_GRB + NEO_KHZ800);
 
+// Setup Phase
 void setup() {
+
+   // Serial configuration
+  Serial.begin(115200);
+
+  // Example description
+  Serial.print("Example for WS2812 LED ring using Pin '");
+  Serial.print(LEDS_PIN);
+  Serial.print("'\n");
+  
   // LED initialization
   strip.begin();
   strip.setBrightness(LEDS_BRIGHTNESS);
   strip.show();
+
+  Serial.println("Setup done!");
 }
 
 void loop() {
   // Some example procedures showing how to display to the pixels:
   movingDot(strip.Color(255, 255, 255), 150); // White
   colorBlink(strip.Color(0, 0, 255), 2, 100);
-  colorRotate(strip.Color(0, 0, 255), 2, 100);
+  colorRotate(strip.Color(255, 0, 0), 2, 100);
+  Serial.println("Loop Done!");
 }
 
 // Fill the dots one after the other with a color
 void colorWipe(uint32_t c, uint8_t wait) {
+  Serial.println("Mode: ColorWipe");
   for(uint16_t i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
     strip.show();
@@ -40,6 +54,7 @@ void colorWipe(uint32_t c, uint8_t wait) {
 
 // Only lit up one LED after each other so that it looks like its wandering around the ring (e.g. good waiting animation)
 void movingDot(uint32_t c, uint8_t wait) {
+  Serial.println("Mode: MovingDot");
   for(uint16_t i=0; i<strip.numPixels(); i++) {
     strip.clear();
     strip.setPixelColor(i, c);
@@ -50,6 +65,7 @@ void movingDot(uint32_t c, uint8_t wait) {
 
 // Let all LEDs blink in a certain frequency
 void colorBlink(uint32_t c, uint8_t blinks, uint8_t wait) {
+  Serial.println("Mode: ColorBlink");
   for(uint8_t k=0; k<blinks; k++) {
     strip.clear();
     strip.show();
@@ -66,6 +82,7 @@ void colorBlink(uint32_t c, uint8_t blinks, uint8_t wait) {
 
 // Blink every second LED and change it in the next iteration (even/uneven/even/... and so on)
 void colorRotate(uint32_t c, uint8_t blinks, uint8_t wait) {
+  Serial.println("Mode: ColorRotate");
   for (uint8_t k = 0; k < blinks; k++) {
     strip.clear();
     strip.show();
