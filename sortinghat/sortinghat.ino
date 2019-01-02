@@ -33,7 +33,7 @@
 #define AUDIO_PIN_BUSY    9
 #define AUDIO_VOLUME      HAT_SOUND_VOLUME
 #define AUDIO_BAUD        9600
-#define AUDIO_TIMEOUT     1000
+#define AUDIO_TIMEOUT     1000                  // in ms
 #define AUDIO_EQUALIZER   DFPLAYER_EQ_NORMAL
 #define AUDIO_DATA_SOURCE DFPLAYER_DEVICE_SD
 
@@ -44,22 +44,18 @@
 #define GREEN   strip.Color(0, 255, 0)
 #define WHITE   strip.Color(255, 255, 255)
 
-// Define house variables
-#define GRYFFINDOR 1
-#define HUFFLEPUFF 2
-#define RAVENCLAW  3
-#define SLYTHERIN  4
-
-// Define house colors
+// Define houses
+#define GRYFFINDOR        1
 #define GRYFFINDOR_COLOR  RED
-#define HUFFLEPUFF_COLOR  YELLOW
-#define RAVENCLAW_COLOR   BLUE
-#define SLYTHERIN_COLOR   GREEN
-
-// Define sounds
 #define GRYFFINDOR_SOUND  2
+#define HUFFLEPUFF        2
+#define HUFFLEPUFF_COLOR  YELLOW
 #define HUFFLEPUFF_SOUND  3
+#define RAVENCLAW         3
+#define RAVENCLAW_COLOR   BLUE
 #define RAVENCLAW_SOUND   4
+#define SLYTHERIN         4
+#define SLYTHERIN_COLOR   GREEN
 #define SLYTHERIN_SOUND   5
 
 // Define house LED parameters
@@ -73,47 +69,46 @@
 
 // Define announcement handling parameters
 #define ANNOUNCEMENT_ACTIVE     1
-#define ANNOUNCEMENT_FREQUENCY  30000
-#define ANNOUNCEMENT_DELAY      100
+#define ANNOUNCEMENT_FREQUENCY  1200000  // in ms
+#define ANNOUNCEMENT_DELAY      100   // in ms
 
 // Define main functions
-#define HAT_COOLDOWN_TIMER    1000
+#define HAT_COOLDOWN_TIMER    5000  // in ms
 #define HAT_WAITING_COLOR     WHITE
-#define HAT_SOUND_VOLUME      15
+#define HAT_SOUND_VOLUME      30    // Values: 0-30
 
 struct sound {
   uint8_t id;
   uint16_t duration;
 };
 
-sound announcementSound = {3, 3000};
-
 // Hard coded list of waiting sounds for every house you need to take care of yourself. I've made them house-branded to make it more personal.
 // The first parameter is the ID on the SD card while the second parameter is the length of the track.
 uint8_t waitingSize = 4;
+sound announcementSound = {1, 17000};
 sound waitingGryffindor[] = {
-  {2, 4000},
-  {2, 4000},
-  {2, 4000},
-  {2, 4000},
+  {6, 7000},
+  {7, 9000},
+  {8, 6000},
+  {9, 6000},
 };
 sound waitingHufflepuff[] = {
-  {3, 4000},
-  {3, 5000},
-  {3, 5000},
-  {3, 5000},
+  {10, 9000},
+  {11, 8000},
+  {12, 7000},
+  {13, 10000},
 };
 sound waitingRavenclaw[] = {
-  {4, 4000},
-  {4, 5000},
-  {4, 2000},
-  {4, 2000},
+  {14, 8000},
+  {15, 7000},
+  {16, 12000},
+  {17, 10000},
 };
 sound waitingSlytherin[] = {
-  {5, 4000},
-  {5, 5000},
-  {5, 2000},
-  {5, 3000},
+  {18, 9000},
+  {19, 7000},
+  {20, 10000},
+  {21, 8000},
 };
 
 // Global variables
@@ -127,6 +122,9 @@ uint8_t trackBuffer = 0;
 
 // Setup Phase
 void setup() {
+  // Add more randomness by using the analog A0 pin with some wire connected
+  randomSeed(analogRead(0));
+  
   // Initialize serial debug connection
   Serial.begin(SERIAL_BAUD);
   Serial.println(F("Harry Potter - the sorting hat project"));
@@ -193,9 +191,19 @@ void loop() {
     Serial.print(sensor1);
     Serial.print(")\n");
 
-    // Show waiting animation and house afterwards
+    // Select a house randomly
     uint8_t house = random(1, 5);
+
+    // Play waiting sound for specific house and waiting animation
     showWaitingAnimation(HAT_WAITING_COLOR, selectWaitingSound(house));
+
+    // Wait until audio playback finished for synchronization
+    while(!myDFPlayer.available()){Serial.println("waiting not finished");}
+    if (myDFPlayer.available()) {
+      printDetail(myDFPlayer.readType(), myDFPlayer.read());
+    }
+
+    // Display house animation and play house selection sound
     showHouse(house);
 
     // Set cooldown variable and reset announcement timer
@@ -273,25 +281,30 @@ void showWaitingAnimation(uint32_t color, uint16_t duration) {
 
 // Select the chosen house
 void showHouse(uint8_t house) {
+  Serial.print("House: ");
   if (house == GRYFFINDOR) {
+    Serial.print("Gryffindor\n");
     colorWipe(GRYFFINDOR_COLOR, 20);
     playSound(GRYFFINDOR_SOUND);
     colorRotate(GRYFFINDOR_COLOR, HOUSE_BLINK_NUMBER, HOUSE_BLINK_DELAY);
     colorBlink(GRYFFINDOR_COLOR, HOUSE_BLINK_NUMBER_POST, HOUSE_BLINK_DELAY);
   }
   if (house == HUFFLEPUFF) {
+    Serial.print("Hufflepuff\n");
     colorWipe(HUFFLEPUFF_COLOR, 20);
     playSound(HUFFLEPUFF_SOUND);
     colorRotate(HUFFLEPUFF_COLOR, HOUSE_BLINK_NUMBER, HOUSE_BLINK_DELAY);
     colorBlink(HUFFLEPUFF_COLOR, HOUSE_BLINK_NUMBER_POST, HOUSE_BLINK_DELAY);
   }
   if (house == RAVENCLAW) {
+    Serial.print("Ravenclaw\n");
     colorWipe(RAVENCLAW_COLOR, 20);
     playSound(RAVENCLAW_SOUND);
     colorRotate(RAVENCLAW_COLOR, HOUSE_BLINK_NUMBER, HOUSE_BLINK_DELAY);
     colorBlink(RAVENCLAW_COLOR, HOUSE_BLINK_NUMBER_POST, HOUSE_BLINK_DELAY);
   }
   if (house == SLYTHERIN) {
+    Serial.print("Slytherin\n");
     colorWipe(SLYTHERIN_COLOR, 20);
     playSound(SLYTHERIN_SOUND);
     colorRotate(SLYTHERIN_COLOR, HOUSE_BLINK_NUMBER, HOUSE_BLINK_DELAY);
