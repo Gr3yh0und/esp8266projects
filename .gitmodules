@@ -55,3 +55,6 @@
 [submodule "libraries/CapacitiveSensor"]
 	path = libraries/CapacitiveSensor
 	url = https://github.com/PaulStoffregen/CapacitiveSensor.git
+[submodule "libraries/Adafruit_TSL2561"]
+	path = libraries/Adafruit_TSL2561
+	url = https://github.com/adafruit/Adafruit_TSL2561.git
