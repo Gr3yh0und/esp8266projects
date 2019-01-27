@@ -6,7 +6,7 @@ The main intent is to get all devices working first and combine them for more co
 * [water flow sensor](flowsensor)
 * [dust sensor](dustsensor)
 * [ambient sensor](bme280)
-* [brightness sensor](ts2561)
+* [brightness sensor](tsl2561)
 * [air quality sensor](ccs811)
 * [capacitive sensor](capacitivesensor)
 * [sound level sensor](soundlevel)
