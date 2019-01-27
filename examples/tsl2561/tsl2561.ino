@@ -50,6 +50,7 @@ void loop() {
 
   // Output
   if (event.light) {
+    Serial.print("Brightness = ");
     Serial.print(event.light); 
     Serial.println(" lux");
   } else {
@@ -57,6 +58,5 @@ void loop() {
   }
 
   // Wait
-  Serial.println("--- New round... ---");
   delay(DELAY);
 }
