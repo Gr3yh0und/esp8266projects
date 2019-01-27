@@ -1,24 +1,22 @@
-# CCS811 CO2 sensor
-This example should provide a first start to work with the CCS811 CO2 sensor which is e.g. produced by Adafruit.
+# Bosch BME280 ambient sensor
+This example should provide a first start to work with the Bosch BME280 ambient sensor which is e.g. produced by Adafruit.
 
-The idea is to use it to read the current CO2 levels and therefore measure the "quality" of the air in the room. This is planned to be a trigger to lazy people to open the windows to breath in some fresh air ;)
+It is capable of reading temperature, ambient pressure and humidity at once with a quite high precision. And its cheap. So one sensor to rule them all.
 
-It is also able to detect gas but I'm more interested in measuring CO2 here (for my smart home use cases).
+I'm using it with the SPI connection in this example.
 
 ## Components
-* NodeMCU v3([Documentation](https://nodemcu.readthedocs.io/en/master/))
-* Adafruit CCS811 sensor ([Documentation](https://www.adafruit.com/product/3566))
+* NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
+* Adafruit Bosch BME280 sensor ([Documentation](https://www.adafruit.com/product/2652))
 ## Breadboard view
-![breadboard](ccs811_bb.png)
+![breadboard](bme280_bb.png)
 ## Schematics
-![schematics](ccs811_schem.png)
+![schematics](bme280_schem.png)
 ## Logging output example
 ```
-> 11:35:10.251 -> Setup: Starting...
-> 11:35:12.441 -> Setup: Successfull!
-> 11:35:12.441 -> CO2: 0ppm, TVOC: 0ppb   Temp:26.00
-> 11:35:22.443 -> CO2: 415ppm, TVOC: 2ppb   Temp:23.98
-> 11:35:32.450 -> CO2: 415ppm, TVOC: 2ppb   Temp:21.07
-> 11:35:42.425 -> CO2: 426ppm, TVOC: 3ppb   Temp:21.56
-
+> 12:08:09.400 -> Setup: Starting...
+> 12:08:09.448 -> Setup: Successfull!
+> 12:08:09.483 -> Temperature = 20.07 °C
+> 12:08:09.483 -> Pressure = 935.00 hPa
+> 12:08:09.517 -> Humidity = 52.91 %
 ```

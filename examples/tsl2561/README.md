@@ -4,7 +4,7 @@ This example should provide a first start to work with the TSL2561 brigthness se
 It measures the brightness in lux and I'm going to use it in different scenarios. E.g. to check if the lights in a room are on or if the dishwasher (which has a bright LED facing the kitchen floor when its on) is finished.
 
 ## Components
-* NodeMCU v3([Documentation](https://nodemcu.readthedocs.io/en/master/))
+* NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
 * Adafruit TSL2561 sensor ([Documentation](https://www.adafruit.com/product/439))
 ## Breadboard view
 ![breadboard](tsl2561_bb.png)
