@@ -6,29 +6,31 @@
 #include <Wire.h>
 #include <SPI.h>
 
+#define DELAY 1000
+
 // Additional used libraries
 // Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor - tested with v1.0.2
 // Adafruit BME280 Library: https://github.com/adafruit/Adafruit_BME280_Library - tested with v1.0.7
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-// Pressure/Humidity/Temperature Sensor, Type: Bosch BME-280
-// Configured as software SPI using Pins D1-D4
-#define BME_SCK   5    // D1 = SCL
-#define BME_MISO  2    // D4 = SD0
-#define BME_MOSI  4    // D2 = SDA
-#define BME_CS    0    // D3 = CSB
-Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); 
+// Pressure/Humidity/Temperature sensor with SPI, Type: Bosch BME-280
+// Configured as software SPI using Pins D5-D8
+#define BME_SCK   14    // D5 = SCL
+#define BME_MISO  15    // D8 = SD0
+#define BME_MOSI  12    // D6 = SDA
+#define BME_CS    13    // D7 = CSB
+Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK);
 
 // Setup Phase
 void setup() {
 
-  // Initialize Serial debug output
+  // Initialize serial debug output
   Serial.begin(115200);
   Serial.print("\n\n");
   Serial.print("Setup: Starting...\n");
 
-  // Initialize Sensors
+  // Initialize sensor
   if (!bme.begin()) {
     Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     while (1);
@@ -57,7 +59,6 @@ void loop() {
   // Measure sensor values
   measureAmbient();
 
-  // Wait for 1 second and increase counter
-  Serial.println("--- New round... ---");
-  delay(1000);
+  // Wait until next measurement
+  delay(DELAY);
 }
