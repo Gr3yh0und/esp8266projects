@@ -32,7 +32,21 @@ Certain key parts are defined at the beginning:
 * Backend system runs on a raspberry pi 3
 * The complete system is planned to be used locally in a LAN environment. However VPN access for certain services would be nice.
 * The idea is to use the hottest and hippest new piece of technology around
-* Learn
+* Learn about everything
+
+## "Stations" finished
+* [Garden control](garden)
+* [Simple ambient sensor station](ambientsensorstation)
+
+## "Stations" ToDo
+* Add more sensors to garden or second station (dust, temperature, humidity, pressure, brightness, rain, wind?)
+* Make use of two brightness sensors at once (e.g. one for room light, second for dishwasher)
+* Add sound sensor to ambient station for to sense if air conditioning is running or not
+* Make a station only showing stats in the main entrance (displays, ledrings, ...)
+* Integrate DS1820 for measuring temperature (e.g. in the fridge)
+
+## Fun projects
+* [Harry Potter sorting hat](sortinghat)
 
 ## Hardware
 * NodeMCU v3 (ESP8266)
@@ -41,16 +55,27 @@ Certain key parts are defined at the beginning:
 * Raspberry Pi as backend
 
 ## Software and Protocols
-* Arduino IDE 1.8.5
+* Arduino IDE 
 * Arduino libraries as stated in the source code
-* HTTP
-* MQTT
+* MQTT / Mosquitto
+* Syslog
+* Telegraf
 * InfluxDB
 * Grafana
 * Raspbian
 
-## Installation
-To be done
+## Installation on stations
+* Setup Arduino environment
+* Select required hardware
+* Flash NodeMCUs with sketches
+* Define MQTT topics
+
+## Installation of the backend
+* Setup Raspberry Pi with Raspbian
+* Setup Mosquitto
+* Setup Telegraf
+* Setup InfluxDB
+* Setup Grafana
  
 ## License
 GNU GPL v3
