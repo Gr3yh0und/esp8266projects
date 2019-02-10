@@ -22,14 +22,14 @@
 #define LEDS_BRIGHTNESS 1
 
 // Configuration for capacitive sensor
-#define SENSOR_PIN_1       5
-#define SENSOR_PIN_2       6
+#define SENSOR_PIN_1       6
+#define SENSOR_PIN_2       5
 #define SENSOR_SENSITIVITY 200
-#define SENSOR_THRESHOLD   1000
+#define SENSOR_THRESHOLD   2000
 
 // Configuration for DFplayer mini
-#define AUDIO_PIN_TX      11
-#define AUDIO_PIN_RX      10
+#define AUDIO_PIN_TX      10
+#define AUDIO_PIN_RX      11
 #define AUDIO_PIN_BUSY    9
 #define AUDIO_VOLUME      HAT_SOUND_VOLUME
 #define AUDIO_BAUD        9600
@@ -73,7 +73,9 @@
 #define ANNOUNCEMENT_DELAY      100   // in ms
 
 // Define main functions
-#define HAT_COOLDOWN_TIMER    5000  // in ms
+#define HAT_COOLDOWN_TIMER    5000  // in ms - Time between two operations
+#define HAT_SENSOR_DELAY      50  // in ms - Time until operation is started
+#define HAT_SENSOR_TIMEOUT    200
 #define HAT_WAITING_COLOR     WHITE
 #define HAT_SOUND_VOLUME      30    // Values: 0-30
 
@@ -119,12 +121,14 @@ DFRobotDFPlayerMini myDFPlayer;
 bool cooldown = false;
 bool playingSound = false;
 uint8_t trackBuffer = 0;
+uint16_t sensorTimer = 0;
+uint16_t sensorTimeout = 0;
 
 // Setup Phase
 void setup() {
   // Add more randomness by using the analog A0 pin with some wire connected
   randomSeed(analogRead(0));
-  
+
   // Initialize serial debug connection
   Serial.begin(SERIAL_BAUD);
   Serial.println(F("Harry Potter - the sorting hat project"));
@@ -185,8 +189,30 @@ void loop() {
     printDetail(myDFPlayer.readType(), myDFPlayer.read());
   }
 
+  if (sensor1 >= SENSOR_THRESHOLD) {
+    sensorTimer = sensorTimer + 1;
+    if (millis() % 10 == 1) {
+      Serial.print("Debug - Sensor activated (SENS:");
+      Serial.print(sensor1);
+      Serial.print(" - timer: ");
+      Serial.print(sensorTimer);
+      Serial.print(")\n");
+    }
+  }else{
+    // Increase sensor timeout timer
+    sensorTimeout = sensorTimeout + 1;
+  }
+
+  // If timeout timer value is too high, reset timeout timer
+  if (sensorTimeout > HAT_SENSOR_TIMEOUT){
+    Serial.println("Debug - Resetting sensor timeout");
+    sensorTimeout = 0;
+    sensorTimer = 0;
+  }
+
   // Trigger main event if not in cooldown and sensor value is higher than threshold
-  if ((sensor1 >= SENSOR_THRESHOLD) && (cooldown == false)) {
+  if ((sensor1 >= SENSOR_THRESHOLD) && (cooldown == false) && (sensorTimer > HAT_SENSOR_DELAY)) {
+
     Serial.print("Debug - Sensor activated (SENS:");
     Serial.print(sensor1);
     Serial.print(")\n");
@@ -198,7 +224,9 @@ void loop() {
     showWaitingAnimation(HAT_WAITING_COLOR, selectWaitingSound(house));
 
     // Wait until audio playback finished for synchronization
-    while(!myDFPlayer.available()){Serial.println("waiting not finished");}
+    while (!myDFPlayer.available()) {
+      Serial.println("Debug - Waiting for audion not finished yet");
+    }
     if (myDFPlayer.available()) {
       printDetail(myDFPlayer.readType(), myDFPlayer.read());
     }
@@ -209,6 +237,7 @@ void loop() {
     // Set cooldown variable and reset announcement timer
     cooldown = true;
     announcementTimer = millis();
+    sensorTimer = 0;
   }
 }
 
@@ -422,7 +451,9 @@ void printDetail(uint8_t type, int value) {
       Serial.println("Audio - USB Removed!");
       break;
     case DFPlayerPlayFinished:
-      if(trackBuffer == value){break;}
+      if (trackBuffer == value) {
+        break;
+      }
       Serial.print(F("Audio - Number "));
       Serial.print(value);
       Serial.println(F(": Play Finished!"));
