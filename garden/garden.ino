@@ -1,8 +1,11 @@
 // Project for controlling and measuring everything around my garden
-// Used devices: 
+// Basically opening magnetic valves for watering the yard, a led light strip for BBQ nights
+// and a waterflow sensor to check how much I spend on watering my garden
+//
+// Used devices: 4 port Relay module, Flow meter FS300A
 // Based on the ArduinoOTA example project
-// Michael Morscher, August 2018
-// Tested on Arduino IDE 1.8.5
+// Michael Morscher, April 2019
+// Tested on Arduino IDE 1.8.9
 // Board: NodeMCU ESP8266 v3
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -11,45 +14,49 @@
 
 // Additional used libraries
 // ArduinoOTA: https://github.com/esp8266/Arduino/tree/master/libraries/ArduinoOTA
-// Syslog: https://github.com/arcao/Syslog
-// arduino-mqtt: https://github.com/256dpi/arduino-mqtt
+// Syslog: https://github.com/arcao/Syslog - v2.0
+// arduino-mqtt: https://github.com/256dpi/arduino-mqtt - v2.4.3
 // Timer: https://github.com/JChristensen/Timer - Branch v2.1
 #include <ArduinoOTA.h>
 #include <Syslog.h>
 #include <MQTT.h>
-#include "Timer.h" 
+#include "Timer.h"
 
-#define VERSION 1.2
-#define SECOND 1000
+// Configuration
+#define LOCATION            "garden"    // Used as SYSLOG app name
+#define HOSTNAME            "ESP-GARDEN"
+#define SSID_NAME           "SSID"
+#define SSID_PASSWORD       "PASSWORD"
+#define MQTT_HOST_ADDRESS   "192.168.0.100"
+#define MQTT_HOST_PORT      1883
+#define SYSLOG_HOST_ADDRESS "192.168.0.100"
+#define SYSLOG_HOST_PORT    514
+#define OTA_PORT            8226
+#define BAUDRATE            115200
+#define BASE_CHANNEL        "cave/garden"
 
-// Network settings
-const char* ssid = "ssid";
-const char* password = "password";
-const char* hostname = "ESP-GARDEN";
-#define RASPI_IP_ADDRESS "192.168.0.X"
+// Settings
+#define VERSION       1.4
+#define SECOND        1000
+#define SYSLOG_LEVEL  LOG_INFO // default e.g. LOG_DEBUG or LOG_INFO
 
-
-// Syslog server connection info
-#define SYSLOG_SERVER RASPI_IP_ADDRESS
-#define SYSLOG_PORT 514
-#define SYSLOG_APP_NAME "GARDEN"
-
-// MQTT connection settings
-#define BROKER_ADDRESS RASPI_IP_ADDRESS
-#define BROKER_PORT 1883
-
-// MQTT sensor/actor settings
-#define TOPIC_ACTORS_NUMBER 3
-char *topics_actors[] = { "sprinkler",  "tropfschlauch", "lichterkette"};
+// MQTT sensor/actor settings (needs to be edited)
+#define TOPIC_ACTORS_NUMBER 4
+char *topics_actors[] = { "cave/garden/sprinkler",  "cave/garden/tropfschlauch", "cave/garden/lichterkette", "cave/garden/debug"};
 #define TOPIC_SENSORS_NUMBER 3
-char *topics_sensors[] = { "durchfluss", "feinstaub25", "feinstaub10"};
+char *topics_sensors[] = { "cave/garden/flow", "cave/garden/dust25", "cave/garden/dust10"};
+
+// Set network, MQTT and syslog settings
+const char* ssid = SSID_NAME;
+const char* password = SSID_PASSWORD;
+const char* hostname = HOSTNAME;
 
 // Timers
-Timer timer; 
+Timer timer;
 struct struct_timer {
-  int8_t id;
-  int8_t pin;
-  uint16_t counter;
+  uint8_t id;
+  uint8_t pin;
+  uint32_t counter;
 };
 struct struct_timer topics_timers[TOPIC_ACTORS_NUMBER];
 
@@ -57,15 +64,15 @@ struct struct_timer topics_timers[TOPIC_ACTORS_NUMBER];
 WiFiClient wifiClient;
 MQTTClient mqttClient;
 WiFiUDP udpClient;
-Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, hostname, SYSLOG_APP_NAME, LOG_KERN);
+Syslog syslog(udpClient, SYSLOG_HOST_ADDRESS, SYSLOG_HOST_PORT, hostname, LOCATION, LOG_KERN);
 
 // Configure relay pins that are used
-#define SPRINKLER RELAY_PIN_1
-#define TROPFSCHLAUCH RELAY_PIN_2
-#define LICHTERKETTE RELAY_PIN_3
 #define RELAY_PIN_1 D0
 #define RELAY_PIN_2 D1
 #define RELAY_PIN_3 D3
+#define SPRINKLER RELAY_PIN_1
+#define TROPFSCHLAUCH RELAY_PIN_2
+#define LICHTERKETTE RELAY_PIN_3
 
 // Configure FS300A water flow sensor
 #define FS300A_PIN D2
@@ -75,6 +82,7 @@ bool relayState[TOPIC_ACTORS_NUMBER] = { false, false, false };
 int relayPin[TOPIC_ACTORS_NUMBER] = { RELAY_PIN_1, RELAY_PIN_2, RELAY_PIN_3 };
 volatile int volumeCounter = 0;       // Measures flow sensor pulses
 bool volumeBuffer = true;
+int debugLevel = 0;
 
 // Parameterization for relay
 int outputPinForTimer = 0;
@@ -97,51 +105,75 @@ void deactivateRelay(int &pin, bool &state)
   state = false;
 }
 
+// Always executed to update timers
 void updateTimer(void *context)
 {
   struct struct_timer *timers = (struct_timer *)context;
   timers->counter = int(timers->counter - 1);
-  mqttClient.publish(topics_actors[timers->pin], String(timers->counter));
+  if (mqttClient.connected()) {
+    mqttClient.publish(topics_actors[timers->pin], String(timers->counter));
+  }
 }
 
+// Switch log level between INFO and DEBUG
+void toggleDebug(String mqttChannel, int level) {
+  if (level == 1) {
+    debugLevel = 1;
+    syslog.logMask(LOG_UPTO(LOG_DEBUG));
+    syslog.log(LOG_INFO, "DEBUGGING ENABLED");
+  } else {
+    debugLevel = 0;
+    syslog.logMask(LOG_UPTO(LOG_INFO));
+    syslog.log(LOG_INFO, "DEBUGGING DISABLED");
+  }
+}
+
+// Call every time a MQTT message is received on the subscribed channels
 void messageReceived(String &topic, String &payload) {
   Serial.println("MQTT message received: topic=" + topic + " (payload=" + payload + ")");
   syslog.log(LOG_DEBUG, "MQTT message received: topic=" + topic + " (payload=" + payload + ")");
 
   // Toggle relays depending on their topic names
-  for (int i=0; i < TOPIC_ACTORS_NUMBER; i++){
-    
-    // if topic is found 
-    if(topic == topics_actors[i]){
-      syslog.log(LOG_DEBUG, "DEBUG=" + String(payload.toInt()));
+  for (int i = 0; i < TOPIC_ACTORS_NUMBER; i++) {
+
+    // if topic is found
+    if (topic == topics_actors[i]) {
+      syslog.log(LOG_DEBUG, "TIMER=" + String(topics_timers[i].id) + ", DEBUG=" + String(payload.toInt()));
+
+      // Handle special debug channel for remote management
+      if (topic == (String(BASE_CHANNEL) + "/debug")) {
+        if (payload.toInt() != debugLevel) {
+          toggleDebug(String(BASE_CHANNEL) + "/debug", payload.toInt());
+          return;
+        }
+      }
 
       // check if a timer should get activated
-      if(payload.toInt() > 0){
-        
+      if (payload.toInt() > 0) {
+
         // check if a timer is already running ...
         // if a new (higher) counter should be set
-        if(payload.toInt() > topics_timers[i].counter){
+        if (payload.toInt() > topics_timers[i].counter) {
 
           // stop existing timer
-          if(topics_timers[i].counter > 0){
-            timer.stop(topics_timers[i].id);  
+          if (topics_timers[i].counter > 0) {
+            timer.stop(topics_timers[i].id);
           }
-          
+
           topics_timers[i].pin = i;
           topics_timers[i].counter = payload.toInt();
-          topics_timers[i].id = timer.every(SECOND, updateTimer, payload.toInt(), &topics_timers[i]);
-          syslog.log(LOG_DEBUG, "DEBUG-timers: " + String(topics_timers[i].id));
-          syslog.log(LOG_INFO, "Relay: Activating #" + String(i+1) + " for " + String(payload) + " seconds");
+          topics_timers[i].id = timer.every(SECOND, updateTimer, payload.toInt(), (void*)&topics_timers[i]);
+          syslog.log(LOG_INFO, "Relay: Activating #" + String(i + 1) + " for " + String(payload) + " seconds");
           activateRelay(relayPin[i], relayState[i]);
-        }else{
+        } else {
           // ignore
-          syslog.log(LOG_INFO, "Relay: Ignoring message for relay #" + String(i+1));
+          syslog.log(LOG_DEBUG, "Relay: Ignoring message for relay #" + String(i + 1));
         }
       }
 
       // deactivate timer
-      else{
-        syslog.log(LOG_INFO, "Relay: Deactivating #" + String(i+1));
+      else {
+        syslog.log(LOG_INFO, "Relay: Deactivating #" + String(i + 1));
         deactivateRelay(relayPin[i], relayState[i]);
         timer.stop(topics_timers[i].id);
         topics_timers[i].counter = 0;
@@ -151,7 +183,7 @@ void messageReceived(String &topic, String &payload) {
 
   // Create debug output for syslog and all relay states
   String states = "";
-  for (int i=0; i < TOPIC_ACTORS_NUMBER; i++){
+  for (int i = 0; i < TOPIC_ACTORS_NUMBER; i++) {
     states = states + " " + topics_actors[i] + "(" + relayState[i] + "),";
   }
   syslog.log(LOG_DEBUG, "New relay states are:" + states);
@@ -163,31 +195,67 @@ void measureFlow(void *context)
   // Q is the flow rate in l/min
   // (pulse frequency x 60 min) / 7.5Q = flow rate in l/hour
   float literPerSecond = volumeCounter / 7.5 / 60;              // liter / second
-  volumeCounter = 0; 
+  volumeCounter = 0;
 
   char volume[8];
-  dtostrf(literPerSecond,2,5,volume);
-  
-  if(literPerSecond > 0){
+  dtostrf(literPerSecond, 2, 5, volume);
+
+  if (literPerSecond > 0) {
     Serial.println("Current volume: " + String(volume) + "l/h");
-    syslog.log(LOG_INFO, "Durchfluss: " + String(volume));
-    mqttClient.publish("durchfluss", String(volume));
+    syslog.log(LOG_DEBUG, "Durchfluss: " + String(volume));
+    mqttClient.publish(topics_sensors[0], String(volume));
     volumeBuffer = true;
-  }else{
+  } else {
     // buffer: Send one "0" message after >0 messages
-    if(volumeBuffer == true){
+    if (volumeBuffer == true) {
       Serial.println("Current volume: " + String(volume) + "l/h");
-      syslog.log(LOG_INFO, "Durchfluss: " + String(volume));
-      mqttClient.publish("durchfluss", String(volume));
+      syslog.log(LOG_DEBUG, "Durchfluss: " + String(volume));
+      if (mqttClient.connected()) {
+        mqttClient.publish(topics_sensors[0], String(volume));
+      }
       volumeBuffer = false;
     }
+  }
+}
+
+// Setup Wi-Fi network and MQTT connection
+void setup_network() {
+  // WIFI configuration
+  WiFi.mode(WIFI_STA);
+  WiFi.hostname(hostname);
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("Wi-Fi connection failed! Rebooting...");
+    delay(5000);
+    ESP.restart();
+  }
+  Serial.println("Connected to Wi-Fi!");
+  Serial.print("Local IP address: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("Hostname: ");
+  Serial.println(WiFi.hostname());
+
+  // MQTT configuration: Initialise and enable callbacks
+  Serial.println("Initialising connection to MQTT broker...");
+  mqttClient.begin(MQTT_HOST_ADDRESS, MQTT_HOST_PORT, wifiClient);
+  mqttClient.onMessage(messageReceived);
+
+  // MQTT connection
+  while (!mqttClient.connect(hostname)) {
+    delay(500);
+  }
+  Serial.println("Connected to broker!");
+
+  // MQTT subscriptions for actuators
+  for (int i = 0; i < TOPIC_ACTORS_NUMBER; i++) {
+    mqttClient.subscribe(topics_actors[i]);
   }
 }
 
 // Setup Phase
 void setup() {
   // Serial configuration
-  Serial.begin(115200);
+  Serial.begin(BAUDRATE);
   Serial.print("Project version: ");
   Serial.println(VERSION);
   Serial.println("Setup initialised!");
@@ -213,23 +281,14 @@ void setup() {
   attachInterrupt(FS300A_PIN, flow, RISING);
   sei();
 
-  // WIFI configuration
-  WiFi.mode(WIFI_STA);
-  WiFi.hostname(hostname);
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Wi-Fi connection failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-  Serial.println("Connected to Wi-Fi!");
-  Serial.print("Local IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("Hostname: ");
-  Serial.println(WiFi.hostname());
+  // Network configuration: Wi-Fi and MQTT
+  setup_network();
+
+  // Set default syslog level
+  syslog.logMask(LOG_UPTO(SYSLOG_LEVEL));
 
   // OTA configuration
-  ArduinoOTA.setPort(8266);
+  ArduinoOTA.setPort(OTA_PORT);
   ArduinoOTA.setHostname(hostname);
   //ArduinoOTA.setPassword(adminpw);
 
@@ -260,22 +319,6 @@ void setup() {
   ArduinoOTA.begin();
   Serial.println("OTA setup successfull!");
 
-  // MQTT configuration: Initialise and enable callbacks
-  Serial.println("Initialising connection to MQTT broker...");
-  mqttClient.begin(BROKER_ADDRESS, BROKER_PORT, wifiClient);
-  mqttClient.onMessage(messageReceived);
-
-  // MQTT connection
-  while (!mqttClient.connect(hostname)) {
-    delay(500);
-  }
-  Serial.println("Connected to broker!");
-
-  // MQTT subscriptions for actuators
-  for (int i = 0; i < TOPIC_ACTORS_NUMBER; i++){
-    mqttClient.subscribe(topics_actors[i]);
-  }
-
   // Timers
   int flowMeasurement = timer.every(SECOND, measureFlow, (void*)0);
 
@@ -288,6 +331,6 @@ void loop() {
   ArduinoOTA.handle();
   mqttClient.loop();
   if (!mqttClient.connected()) {
-    setup();
+    setup_network();
   }
 }
