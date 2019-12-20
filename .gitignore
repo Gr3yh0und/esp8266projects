@@ -4,3 +4,4 @@ libraries/Bridge/
 libraries/Firmata/
 libraries/Keyboard/
 libraries/SD/
+.vscode/
