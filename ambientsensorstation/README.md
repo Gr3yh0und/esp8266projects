@@ -3,19 +3,39 @@ This station implements basic ambient sensing functionalities including temperat
 
 The main intent for me is to use this inside e.g. the living or sleeping room. However the basis without the air quality sensor can be used in many other rooms or scenarios as well.
 
-Note: As this is developed to work in a productive environment the system uses the "deep sleep" state of the ESP8266.
+Note: As this is developed to work in a productive environment the system uses the "deep sleep" state of the ESP8266, which is why D0 is connected to the RESET of the ESP8266. To control this deep sleep I'm using a MODE switch so that I can select by using the switch if the device should use deep sleep with a defined interval or not.
 
 Note: The values in this scenario are transmitted on multiple different MQTT channels as single values. This makes it simple but a switch to JSON based is planned for the future.
 
-## Components
+## Components 
+During the planning phase I first wanted to build this setup upon Adafruit components, but they turned out to be more expensive and I was going for cheaper clones from Aliexpress. 
+However I'm also listing the equivalent Adafruit sensors where I'm also taking the libraries from.
+
+### Components based on Adafruit
 * NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
 * Adafruit Bosch BME280 sensor ([Documentation](https://www.adafruit.com/product/2652))
 * Adafruit CCS811 sensor ([Documentation](https://www.adafruit.com/product/3566))
 * Adafruit TSL2561 sensor ([Documentation](https://www.adafruit.com/product/439))
+* Switch
+
+### Components based on Aliexpress
+* NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
+* Clone Bosch BME280 sensor 
+* Clone CCS811 sensor 
+* Clone TSL2561 sensor "GY-2561"
+* Switch
 
 ## Connection
 * BME280 @ SPI
 * CCS811 + TSL2561 @ I2C
+
+## Fritzing PCB / Gerber
+As I wanted to build a complete station I've also designed a PCB within Fritzing and also exported it as gerber.
+The Fritzing part I've created for the clone TSL2561 can be found within the examples directory.
+![pcb](ambientsensorstation_pcb.png)
+
+## 3D print template
+To be done...
 
 ## Breadboard view
 ![breadboard](ambientsensorstation_bb.png)

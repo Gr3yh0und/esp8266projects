@@ -1,0 +1,30 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=ambientsensorstation
+*Date=17:41:47
+*CreatedBy=Fritzing 0.9.4.2019-12-01.CD-498-0-a1ffcea
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;22.3865;-19.5447;0;Bottom;NodeMCU
+2;;;15.6761;-9.68426;90;Bottom;TXT7
+3;;;33.2232;-26.284;0;Bottom;Via2
+4;;;3.44583;-11.6855;-90;Bottom;TXT6
+5;;;9.68088;-29.2097;-90;Bottom;CCS811
+6;;;3.33088;-2.53967;0;Bottom;Hole5
+7;;;19.812;-28.7224;0;Bottom;Via3
+8;;;41.4309;-35.5597;0;Bottom;Hole1
+9;;;38.8909;-33.0197;0;Bottom;Via4
+10;;;25.908;-34.2088;0;Bottom;Via1
+11;;;28.4009;-31.7547;-90;Bottom;BME280
+12;;;41.4309;-2.53967;0;Bottom;Hole4
+13;;;3.58375;-29.3165;-90;Bottom;TXT6
+14;;;33.8149;-12.8587;90;Bottom;GY-2561
+15;;THT;41.4309;-26.6697;90;Bottom;Switch
