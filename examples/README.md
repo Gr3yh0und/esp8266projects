@@ -10,6 +10,7 @@ The main intent is to get all devices working first and combine them for more co
 * [air quality sensor](ccs811)
 * [capacitive sensor](capacitivesensor)
 * [sound level sensor](soundlevel)
+* [DS18B20 temperature sensor](ds18b20)
 
 ## Actors
 * [4 channel relay module](relay)
