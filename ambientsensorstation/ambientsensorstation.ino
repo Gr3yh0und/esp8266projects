@@ -1,28 +1,29 @@
 // Project for an ambient sensor station for the NodeMCU/ESP8266 platform
 // The purpose is to collect indoor sensor information for smart home automation
-// Note: If you want to use deep sleep make sure to connect D0 to RST!
-// Used devices: BME-280, TSL-2561
-// Michael Morscher, January 2019
-// Tested on Arduino IDE 1.8.8
+// Note: Deep Sleep can be configured via Switch
+// Used devices: BME-280, TSL-2561, CCS811, Switch 2-Pin
+// Michael Morscher, April 2020
+// Tested on Arduino IDE 1.8.12
 // Board: NodeMCU ESP8266 v3
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <stdlib.h>
+//#define ARDUINO 101
 
 // Additional used libraries
 // ArduinoOTA: https://github.com/esp8266/Arduino/tree/master/libraries/ArduinoOTA
-// Syslog: https://github.com/arcao/Syslog - tested with master 10.9.2018
-// arduino-mqtt: https://github.com/256dpi/arduino-mqtt - tested with v2.4.2
-// Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor - tested with v1.0.2
-// Adafruit BME280 Library: https://github.com/adafruit/Adafruit_BME280_Library - tested with v1.0.7
-// Adafruit TSL2561 Library: https://github.com/adafruit/Adafruit_TSL2561.git - tested with v1.0.2
-// Adafruit CCS811: https://github.com/adafruit/Adafruit_CCS811 - tested with v1.0.1
+// Syslog: https://github.com/arcao/Syslog
+// arduino-mqtt: https://github.com/256dpi/arduino-mqtt
+// Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor
+// Adafruit BME280 Library: https://github.com/adafruit/Adafruit_BME280_Library
+// Adafruit TSL2561 Library: https://github.com/adafruit/Adafruit_TSL2561.git
+// Adafruit CCS811: https://github.com/adafruit/Adafruit_CCS811
 #include <ArduinoOTA.h>
 #include <Syslog.h>
 #include <MQTT.h>
-#include "Timer.h"
+//#include "Timer.h"
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <Adafruit_TSL2561_U.h>
@@ -37,7 +38,7 @@
 #define SLEEPTIME       30e6              // in seconds
 
 // Settings
-#define VERSION 1.0
+#define VERSION 1.1
 #define BAUDRATE 115200
 #define OTA_PORT 8266
 
@@ -54,6 +55,9 @@ const char* hostname = HOSTNAME;
 // MQTT connection settings
 #define BROKER_ADDRESS HOST_ADDRESS
 #define BROKER_PORT 1883
+
+// NodeMCU LED
+int LED = 2;
 
 // Light Sensor, Type: TSL-2561
 // D1 = SCL
@@ -92,6 +96,10 @@ void setup() {
   Serial.print("Project version: ");
   Serial.println(VERSION);
   Serial.println("Setup initialised!");
+
+  // LED initialization
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
 
   // WIFI configuration
   WiFi.mode(WIFI_STA);
@@ -153,7 +161,7 @@ void setup() {
 
   // Initialize Sensors
   if (!bme.begin()) {
-    Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
+    Serial.println(("Could not find a valid BME280 sensor, check wiring!"));
     while (1);
   }
   if (!tsl.begin()) {
@@ -173,8 +181,7 @@ void setup() {
   float temp = ccs.calculateTemperature();
   ccs.setTempOffset(temp - 25.0);*/
 
-  syslog.log(LOG_INFO, "System version: " + String(VERSION));
-  syslog.log(LOG_INFO, "System setup successfull!");
+  syslog.log(LOG_INFO, "Startup successfull! (Version: " + String(VERSION) + ")");
   Serial.print("Setup: Successfull!\n");
 }
 
@@ -216,7 +223,7 @@ void measureHumidity() {
   Serial.println(" %");
   mqttClient.publish("cave/livingroom/humidity", String(bme.readHumidity()));
 }
-/*
+
 // Measure CO2 and gas detection
 void measureGas() {
   float eCO2 = 0;
@@ -239,7 +246,7 @@ void measureGas() {
     mqttClient.publish("cave/livingroom/co2", String(eCO2));
     mqttClient.publish("cave/livingroom/tvoc", String(TVOC));
   }
-}*/
+}
 
 // Endless program loop
 void loop() {
@@ -259,10 +266,11 @@ void loop() {
   measurePressure();
   measureHumidity();
   /*measureGas();*/
+  Serial.print("*********************\n");
 
   // Required for network stack to finish sending MQTT messages
-  delay(50);
+  delay(5000);
 
   // Set ESP to deep sleep to save energy - Make sure to connect D0 with RST on the NodeMCU!
-  ESP.deepSleep(SLEEPTIME);
+  //ESP.deepSleep(SLEEPTIME);
 }

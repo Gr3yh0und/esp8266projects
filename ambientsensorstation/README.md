@@ -29,6 +29,12 @@ However I'm also listing the equivalent Adafruit sensors where I'm also taking t
 * BME280 @ SPI
 * CCS811 + TSL2561 @ I2C
 
+## Breadboard view
+![breadboard](ambientsensorstation_bb.png)
+
+## Schematics
+![schematics](ambientsensorstation_schem.png)
+
 ## Fritzing PCB / Gerber
 As I wanted to build a complete station I've also designed a PCB within Fritzing and also exported it as gerber.
 The Fritzing part I've created for the clone TSL2561 can be found within the examples directory.
@@ -36,12 +42,6 @@ The Fritzing part I've created for the clone TSL2561 can be found within the exa
 
 ## 3D print template
 To be done...
-
-## Breadboard view
-![breadboard](ambientsensorstation_bb.png)
-
-## Schematics
-![schematics](ambientsensorstation_schem.png)
 
 ## Logging output example
 ```
