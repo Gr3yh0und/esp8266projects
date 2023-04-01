@@ -37,6 +37,7 @@ Certain key parts are defined at the beginning:
 ## "Stations" finished
 * [Garden control](garden)
 * [Simple ambient sensor station](ambientsensorstation)
+* [Brewing Station](brewingstation)
 
 ## "Stations" ToDo
 * Add more sensors to garden or second station (dust, temperature, humidity, pressure, brightness, rain, wind?)

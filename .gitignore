@@ -5,3 +5,7 @@ libraries/Keyboard/
 libraries/SD/
 .vscode/
 fritzing.0.9.4.64.pc/
+build/
+brewingstation/config.h
+Fritzing/
+MQTTDevice2/
