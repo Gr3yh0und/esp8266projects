@@ -18,16 +18,19 @@ However I'm also listing the equivalent Adafruit sensors where I'm also taking t
 * Adafruit TSL2561 sensor ([Documentation](https://www.adafruit.com/product/439))
 * Switch
 
-### Components based on Aliexpress
+### Components used
 * NodeMCU v3 ([Documentation](https://nodemcu.readthedocs.io/en/master/))
 * Clone Bosch BME280 sensor 
 * Clone CCS811 sensor 
 * Clone TSL2561 sensor "GY-2561"
 * Switch
+* DS18B20
+* 4,7k Ohm resistor
 
 ## Connection
 * BME280 @ SPI
 * CCS811 + TSL2561 @ I2C
+* DS18B20 @ OneWire
 
 ## Breadboard view
 ![breadboard](ambientsensorstation_bb.png)
