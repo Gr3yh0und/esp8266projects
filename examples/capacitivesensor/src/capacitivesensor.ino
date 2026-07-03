@@ -24,8 +24,6 @@ void setup() {
 
   // Serial configuration
   Serial.begin(115200);
-  Serial.print("Project version: ");
-  Serial.println(version);
   Serial.println("Setup initialised!");
 
   // Turn off autocalibrate on channel 1
