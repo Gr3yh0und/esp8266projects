@@ -15,28 +15,26 @@
 // Additional used libraries
 // ArduinoOTA: https://github.com/esp8266/Arduino/tree/master/libraries/ArduinoOTA
 // Syslog: https://github.com/arcao/Syslog - v2.0
-// arduino-mqtt: https://github.com/256dpi/arduino-mqtt - v2.4.3
+// arduino-mqtt: https://github.com/256dpi/arduino-mqtt - v2.4.7
 // Timer: https://github.com/JChristensen/Timer - Branch v2.1
 #include <ArduinoOTA.h>
 #include <Syslog.h>
 #include <MQTT.h>
-#include "Timer.h"
+#include <Timer.h>
 
 // Configuration
+// Copy include/config_example.h to include/config.h (gitignored) and fill in your real values.
+#include "config.h"
 #define LOCATION            "garden"    // Used as SYSLOG app name
 #define HOSTNAME            "ESP-GARDEN"
-#define SSID_NAME           "SSID"
-#define SSID_PASSWORD       "PASSWORD"
-#define MQTT_HOST_ADDRESS   "192.168.0.100"
 #define MQTT_HOST_PORT      1883
-#define SYSLOG_HOST_ADDRESS "192.168.0.100"
 #define SYSLOG_HOST_PORT    514
 #define OTA_PORT            8226
 #define BAUDRATE            115200
 #define BASE_CHANNEL        "cave/garden"
 
 // Settings
-#define VERSION       1.4
+#define VERSION       1.5
 #define SECOND        1000
 #define SYSLOG_LEVEL  LOG_INFO // default e.g. LOG_DEBUG or LOG_INFO
 

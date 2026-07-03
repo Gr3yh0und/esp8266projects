@@ -30,12 +30,11 @@
 #include <Adafruit_CCS811.h>
 
 // Configuration
+// Copy include/config_example.h to include/config.h (gitignored) and fill in your real values.
+#include "config.h"
 #define LOCATION        "livingroom"
 #define HOSTNAME        "ESP-LIVING"
-#define SSID_NAME       "ssid"
-#define SSID_PASSWORD   "password"
-#define HOST_ADDRESS    "192.168.0.100"
-#define SLEEPTIME       30e6              // in seconds
+#define SLEEPTIME       0              // in seconds
 
 // Settings
 #define VERSION 1.1
