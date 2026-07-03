@@ -31,7 +31,7 @@
 #define SYSLOG_HOST_PORT    514
 #define OTA_PORT            8226
 #define BAUDRATE            115200
-#define BASE_CHANNEL        "cave/garden"
+#define BASE_CHANNEL        MQTT_ROOT_TOPIC "/garden"
 
 // Settings
 #define VERSION       1.5
@@ -40,9 +40,9 @@
 
 // MQTT sensor/actor settings (needs to be edited)
 #define TOPIC_ACTORS_NUMBER 4
-char *topics_actors[] = { "cave/garden/sprinkler",  "cave/garden/tropfschlauch", "cave/garden/lichterkette", "cave/garden/debug"};
+char *topics_actors[] = { BASE_CHANNEL "/sprinkler", BASE_CHANNEL "/tropfschlauch", BASE_CHANNEL "/lichterkette", BASE_CHANNEL "/debug"};
 #define TOPIC_SENSORS_NUMBER 3
-char *topics_sensors[] = { "cave/garden/flow", "cave/garden/dust25", "cave/garden/dust10"};
+char *topics_sensors[] = { BASE_CHANNEL "/flow", BASE_CHANNEL "/dust25", BASE_CHANNEL "/dust10"};
 
 // Set network, MQTT and syslog settings
 const char* ssid = SSID_NAME;

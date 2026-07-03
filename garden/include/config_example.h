@@ -4,3 +4,4 @@
 #define SSID_PASSWORD       "PASSWORD"
 #define MQTT_HOST_ADDRESS   "192.168.0.100"
 #define SYSLOG_HOST_ADDRESS "192.168.0.100"
+#define MQTT_ROOT_TOPIC     "home"

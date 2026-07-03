@@ -195,7 +195,7 @@ void measureBrightness() {
     Serial.print("Brightness = ");
     Serial.print(event.light);
     Serial.println(" lux");
-    mqttClient.publish("cave/livingroom/brightness", String(event.light));
+    mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/brightness", String(event.light));
   }
 }
 
@@ -204,7 +204,7 @@ void measureTemperature() {
   Serial.print("Temperature = ");
   Serial.print(bme.readTemperature());
   Serial.println(" °C");
-  mqttClient.publish("cave/livingroom/temperature", String(bme.readTemperature()));
+  mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/temperature", String(bme.readTemperature()));
 }
 
 // Measure ambient pressure
@@ -212,7 +212,7 @@ void measurePressure() {
   Serial.print("Pressure = ");
   Serial.print(bme.readPressure() / 100.0F);
   Serial.println(" hPa");
-  mqttClient.publish("cave/livingroom/pressure", String((bme.readPressure() / 100.0F)));
+  mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/pressure", String((bme.readPressure() / 100.0F)));
 }
 
 // Measure ambient humidity
@@ -220,7 +220,7 @@ void measureHumidity() {
   Serial.print("Humidity = ");
   Serial.print(bme.readHumidity());
   Serial.println(" %");
-  mqttClient.publish("cave/livingroom/humidity", String(bme.readHumidity()));
+  mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/humidity", String(bme.readHumidity()));
 }
 
 // Measure CO2 and gas detection
@@ -242,8 +242,8 @@ void measureGas() {
   Serial.print(TVOC);
   Serial.println(" ppb");
   if (eCO2 > 0) {
-    mqttClient.publish("cave/livingroom/co2", String(eCO2));
-    mqttClient.publish("cave/livingroom/tvoc", String(TVOC));
+    mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/co2", String(eCO2));
+    mqttClient.publish(MQTT_ROOT_TOPIC "/livingroom/tvoc", String(TVOC));
   }
 }
 

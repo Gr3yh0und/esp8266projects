@@ -1,6 +1,6 @@
 # ESP8266/ESP32 Smart Home & IoT Projects
 
-A collection of embedded IoT projects for smart home automation, home brewing, garden control, and more. Built around NodeMCU (ESP8266) and ESP32 hardware with a Raspberry Pi backend.
+A collection of embedded IoT projects for smart home automation, home brewing, garden control, and more. Built around NodeMCU (ESP8266) and ESP32 hardware.
 
 ## Architecture
 
@@ -10,10 +10,10 @@ Sensor → Device → Wi-Fi → MQTT (Mosquitto) → Telegraf → InfluxDB → G
                                                          Control via MQTT
 ```
 
-**Backend:** Raspberry Pi running Mosquitto, Telegraf, InfluxDB, Grafana  
+**Backend:** Mosquitto, Telegraf, InfluxDB, Grafana  
 **Devices:** NodeMCU v3 (ESP8266), DOIT ESP32 DEVKIT V1, ESP32-C6-WROOM-1U  
 **Protocol:** MQTT over Wi-Fi, Syslog for logging, OTA for firmware updates  
-**MQTT root topic:** `cave/`
+**MQTT root topic:** `home/`
 
 ---
 
@@ -31,7 +31,7 @@ Controls garden irrigation and lighting via MQTT-triggered timed relays.
 **Actuators:** 3x relays — sprinkler, drip hose (*Tropfschlauch*), fairy lights (*Lichterkette*)  
 **Sensor:** FS300A water flow meter (pulse counter interrupt)  
 **Features:** Timer-based relay control (send seconds via MQTT, countdown published back), remote debug level toggle  
-**MQTT topics:** `cave/garden/sprinkler`, `cave/garden/tropfschlauch`, `cave/garden/lichterkette`, `cave/garden/flow`  
+**MQTT topics:** `home/garden/sprinkler`, `home/garden/tropfschlauch`, `home/garden/lichterkette`, `home/garden/flow`  
 **Includes:** Fritzing diagram
 
 ---
@@ -42,7 +42,7 @@ Indoor environmental monitoring station.
 **Board:** NodeMCU ESP8266 v3  
 **Sensors:** BME280 (temperature, humidity, pressure), TSL2561 (light/lux), CCS811 (CO2/TVOC — wired but disabled in code)  
 **Features:** Deep sleep support (pin D0→RST), OTA updates  
-**MQTT topics:** `cave/livingroom/temperature`, `cave/livingroom/humidity`, `cave/livingroom/pressure`, `cave/livingroom/brightness`  
+**MQTT topics:** `home/livingroom/temperature`, `home/livingroom/humidity`, `home/livingroom/pressure`, `home/livingroom/brightness`  
 **Includes:** Fritzing diagram, PCB layout, gerber files
 
 ---
@@ -86,7 +86,7 @@ Reference implementations for individual components, each its own PlatformIO pro
 - NodeMCU v3 (ESP8266) — garden, ambient sensor, weather station
 - Arduino Nano — sorting hat, capacitivesensor, ledring, dfplayer examples
 - Arduino Uno — soundlevel example
-- Raspberry Pi (backend): Mosquitto, Telegraf, InfluxDB, Grafana, Raspbian
+- Backend: Mosquitto, Telegraf, InfluxDB, Grafana
 
 Brewing station hardware (ESP32 / ESP32-C6) now lives in the separate brewing station repository.
 
@@ -94,7 +94,7 @@ Brewing station hardware (ESP32 / ESP32-C6) now lives in the separate brewing st
 
 - Wi-Fi station mode with auto-reconnect and reboot on failure
 - OTA (Over-The-Air) firmware updates via ArduinoOTA
-- UDP Syslog logging to Raspberry Pi
+- UDP Syslog logging to the backend server
 - MQTT for sensor data publishing and actuator control
 - mDNS hostname registration (newer projects)
 

@@ -25,8 +25,7 @@ All projects and examples in this repo were migrated from classic Arduino IDE + 
 
 ## Backend Stack
 
-All ESP8266/ESP32 projects expect:
-- **Raspberry Pi** at a fixed LAN IP (192.168.0.51 in most projects, 192.168.0.100 in newer config example)
+All ESP8266/ESP32 projects expect a backend server at a fixed LAN IP (192.168.0.51 in most projects, 192.168.0.100 in newer config example) running:
 - **Mosquitto** MQTT broker on port 1883
 - **Syslog** listener on UDP port 514
 - **InfluxDB** + **Telegraf** + **Grafana** for storage and visualization
@@ -37,10 +36,10 @@ No cloud services. Everything is local LAN. VPN access was planned but not imple
 
 ## MQTT Topic Structure
 
-Root namespace: `cave/`
+Root namespace: `home/`
 
 ```
-cave/
+home/
   garden/
     sprinkler         ← relay on/off (send seconds for timed, 0 to stop)
     tropfschlauch     ← drip hose relay
