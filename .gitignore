@@ -1,11 +1,5 @@
-libraries/Bridge/keywords.txt
-libraries/Bridge/
-libraries/Firmata/
-libraries/Keyboard/
-libraries/SD/
 .vscode/
-fritzing.0.9.4.64.pc/
+.claude/
 build/
-brewingstation/config.h
+.pio/
 Fritzing/
-MQTTDevice2/

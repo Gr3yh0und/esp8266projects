@@ -1,0 +1,109 @@
+{
+	"folders": [
+		{
+			"name": "ambientsensorstation",
+			"path": "ambientsensorstation"
+		},
+		{
+			"name": "garden",
+			"path": "garden"
+		},
+		{
+			"name": "sortinghat",
+			"path": "sortinghat"
+		},
+		{
+			"name": "weatherstation",
+			"path": "weatherstation"
+		},
+		{
+			"name": "examples/bme280",
+			"path": "examples/bme280"
+		},
+		{
+			"name": "examples/capacitivebutton",
+			"path": "examples/capacitivebutton"
+		},
+		{
+			"name": "examples/capacitivesensor",
+			"path": "examples/capacitivesensor"
+		},
+		{
+			"name": "examples/ccs811",
+			"path": "examples/ccs811"
+		},
+		{
+			"name": "examples/dfplayer",
+			"path": "examples/dfplayer"
+		},
+		{
+			"name": "examples/ds18b20",
+			"path": "examples/ds18b20"
+		},
+		{
+			"name": "examples/dustsensor",
+			"path": "examples/dustsensor"
+		},
+		{
+			"name": "examples/flowsensor",
+			"path": "examples/flowsensor"
+		},
+		{
+			"name": "examples/inductionids2",
+			"path": "examples/inductionids2/inductionids2"
+		},
+		{
+			"name": "examples/inductionids2 (180918)",
+			"path": "examples/inductionids2/180918_Induktion"
+		},
+		{
+			"name": "examples/inductionids2 (181009)",
+			"path": "examples/inductionids2/181009_Induktion"
+		},
+		{
+			"name": "examples/ledring",
+			"path": "examples/ledring"
+		},
+		{
+			"name": "examples/mqtt",
+			"path": "examples/mqtt"
+		},
+		{
+			"name": "examples/ota",
+			"path": "examples/ota"
+		},
+		{
+			"name": "examples/relay",
+			"path": "examples/relay"
+		},
+		{
+			"name": "examples/soundlevel",
+			"path": "examples/soundlevel"
+		},
+		{
+			"name": "examples/ssd1306",
+			"path": "examples/ssd1306"
+		},
+		{
+			"name": "examples/syslog",
+			"path": "examples/syslog"
+		},
+		{
+			"name": "examples/temperature",
+			"path": "examples/temperature"
+		},
+		{
+			"name": "examples/timer",
+			"path": "examples/timer"
+		},
+		{
+			"name": "examples/tsl2561",
+			"path": "examples/tsl2561"
+		},
+		{
+			"name": "esp8266projects (repo root)",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
